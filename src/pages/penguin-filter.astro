@@ -1,0 +1,62 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="TP4 — Penguins (filtre espèce)">
+  <h2 style="margin:0 0 .75rem">Penguins — filtre espèce</h2>
+
+  <label for="species" style="display:block;margin:.5rem 0 1rem">
+    Espèce :
+    <select id="species" style="margin-left:.5rem">
+      <option value="">All species</option>
+      <option value="Adelie">Adelie</option>
+      <option value="Chinstrap">Chinstrap</option>
+      <option value="Gentoo">Gentoo</option>
+    </select>
+  </label>
+
+  <div id="vis"></div>
+
+  <script>
+    import * as Plot from "@observablehq/plot";
+    import penguinsRaw from "../assets/penguins.json";
+
+    const base = penguinsRaw
+      .filter(d => d.culmen_length_mm != null && d.culmen_depth_mm != null)
+      .map(d => ({
+        ...d,
+        culmen_length_mm: +d.culmen_length_mm,
+        culmen_depth_mm: +d.culmen_depth_mm
+      }));
+
+    const root = document.querySelector("#vis");
+    const selectSpecies = document.querySelector("#species");
+
+    function renderPlot() {
+      const species = selectSpecies.value;
+      const rows = species ? base.filter(d => d.species === species) : base;
+
+      root.innerHTML = "";
+      const plot = Plot.plot({
+        width: 920,
+        height: 500,
+        marks: [
+          Plot.dot(rows, {
+            x: "culmen_length_mm",
+            y: "culmen_depth_mm",
+            stroke: "species",
+            fill: "species",
+            r: 3.5,
+            tip: true
+          })
+        ],
+        x: { label: "Culmen length (mm)", grid: true },
+        y: { label: "Culmen depth (mm)", grid: true },
+        color: { legend: true }
+      });
+      root.append(plot);
+    }
+
+    selectSpecies.addEventListener("change", renderPlot);
+    renderPlot();
+  </script>
+</Layout>
