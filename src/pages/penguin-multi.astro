@@ -13,6 +13,7 @@ import Layout from "../layouts/Layout.astro";
         <option value="Gentoo">Gentoo</option>
       </select>
     </label>
+
     <label>Île
       <select id="island" style="margin-left:.35rem">
         <option value="">Toutes</option>
@@ -21,6 +22,7 @@ import Layout from "../layouts/Layout.astro";
         <option value="Torgersen">Torgersen</option>
       </select>
     </label>
+
     <label>Sexe
       <select id="sex" style="margin-left:.35rem">
         <option value="">Tous</option>
@@ -36,6 +38,17 @@ import Layout from "../layouts/Layout.astro";
     import * as Plot from "@observablehq/plot";
     import penguinsRaw from "../assets/penguins.json";
 
+    // mapping couleurs fixes
+    const SPECIES = ["Adelie","Chinstrap","Gentoo"];
+    const COLORS  = ["#2563eb", "#f59e0b", "#ef4444"]; // bleu, jaune, rouge
+
+    // îles possibles par espèce (dataset original)
+    const ISLANDS_BY_SPECIES = {
+      Adelie: ["Biscoe","Dream","Torgersen"],
+      Chinstrap: ["Dream"],
+      Gentoo: ["Biscoe"]
+    };
+
     const base = penguinsRaw
       .filter(d => d.culmen_length_mm != null && d.culmen_depth_mm != null)
       .map(d => ({
@@ -44,20 +57,39 @@ import Layout from "../layouts/Layout.astro";
         culmen_depth_mm: +d.culmen_depth_mm
       }));
 
-    const root = document.querySelector("#vis");
-    const selS = document.querySelector("#species");
-    const selI = document.querySelector("#island");
-    const selX = document.querySelector("#sex");
+    const root  = document.querySelector("#vis");
+    const selS  = document.querySelector("#species");
+    const selI  = document.querySelector("#island");
+    const selX  = document.querySelector("#sex");
+
+    function syncIslands() {
+      const s = selS.value;
+      const allowed = s ? ISLANDS_BY_SPECIES[s] : ["Biscoe","Dream","Torgersen"];
+      for (const opt of selI.options) {
+        if (opt.value === "") continue;
+        opt.disabled = !allowed.includes(opt.value);
+        if (opt.disabled && opt.selected) selI.value = "";
+      }
+    }
 
     function renderPlot() {
-      const s = selS.value, i = selI.value, x = selX.value;
+      const s  = selS.value;
+      const i  = selI.value;
+      const sx = selX.value;
+
       const rows = base.filter(d =>
-        (s ? d.species === s : true) &&
-        (i ? d.island  === i : true) &&
-        (x ? d.sex     === x : true)
+        (s  ? d.species === s : true) &&
+        (i  ? d.island  === i : true) &&
+        (sx ? d.sex     === sx : true)
       );
 
       root.innerHTML = "";
+
+      if (!rows.length) {
+        root.innerHTML = `<p style="opacity:.7">Aucune donnée pour cette combinaison.</p>`;
+        return;
+      }
+
       const plot = Plot.plot({
         width: 920,
         height: 500,
@@ -73,12 +105,20 @@ import Layout from "../layouts/Layout.astro";
         ],
         x: { label: "Culmen length (mm)", grid: true },
         y: { label: "Culmen depth (mm)", grid: true },
-        color: { legend: true }
+        // >>> échelle de couleur figée
+        color: { type: "ordinal", legend: true, domain: SPECIES, range: COLORS }
       });
+
       root.append(plot);
     }
 
-    [selS, selI, selX].forEach(el => el.addEventListener("change", renderPlot));
+    // événements
+    selS.addEventListener("change", () => { syncIslands(); renderPlot(); });
+    selI.addEventListener("change", renderPlot);
+    selX.addEventListener("change", renderPlot);
+
+    // init
+    syncIslands();
     renderPlot();
   </script>
 </Layout>
