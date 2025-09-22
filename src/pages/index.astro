@@ -1,21 +1,20 @@
 ---
-import PlotFigure from "../components/PlotFigure.astro";
 import Layout from "../layouts/Layout.astro";
-import * as Plot from "@observablehq/plot";
-import penguins from "../assets/penguins.json";
 ---
+<Layout title="TP4 — Graphiques côté client">
+  <h1 style="margin:0 0 .5rem;font-weight:800;font-size:clamp(1.6rem,3vw,2.4rem)">
+    TP4 — Graphiques côté client (Observable Plot)
+  </h1>
+  <p style="opacity:.8;margin:.25rem 0 1.25rem">
+    Utilise les liens ci-dessous pour tester chaque variante :
+  </p>
 
-<Layout>
-  <h1 class="text-2xl">Test Astro et Plot (Observablehq)</h1>
-  <PlotFigure
-    options={{
-      marks: [
-        Plot.dot(penguins, {
-          x: "culmen_length_mm",
-          y: "culmen_depth_mm",
-          stroke: "species",
-        }),
-      ],
-    }}
-  />
+  <ul style="line-height:1.9">
+    <li><a href="/simple-cdn" class="underline">Simple (ESM + CDN)</a></li>
+    <li><a href="/simple-esm" class="underline">Simple (ESM via npm)</a></li>
+    <li><a href="/penguin" class="underline">Penguins — scatter</a></li>
+    <li><a href="/penguin-filter" class="underline">Penguins — filtre espèce</a></li>
+    <li><a href="/penguin-multi" class="underline">Penguins — filtres espèce + île + sexe</a></li>
+  </ul>
 </Layout>
+
