@@ -7,10 +7,8 @@ import Layout from "../layouts/Layout.astro";
   <div id="chart"></div>
 
   <script>
-    // Client uniquement
     import * as Plot from "@observablehq/plot";
 
-    // Données bidon
     const letters = "ABCDEFGHIJ".split("").map((name, i) => ({
       name,
       value: 10 + Math.round(Math.random() * 40)
