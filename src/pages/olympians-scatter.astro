@@ -13,8 +13,8 @@ import Layout from "../layouts/Layout.astro";
       .filter(d => d.height != null && d.weight != null)
       .map(d => ({
         ...d,
-        height: +d.height,   // m
-        weight: +d.weight,   // kg
+        height: +d.height,   
+        weight: +d.weight,  
         sex: d.sex?.toLowerCase() || null,
         medals: (+d.gold || 0) + (+d.silver || 0) + (+d.bronze || 0)
       }));
@@ -23,7 +23,7 @@ import Layout from "../layouts/Layout.astro";
 
     const colors = {
       domain: ["female", "male"],
-      range: ["#ff7f0e", "#1f77b4"] // femelle = orange, mâle = bleu
+      range: ["#ff7f0e", "#1f77b4"] 
     };
 
     function render() {
