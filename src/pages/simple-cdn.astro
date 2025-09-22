@@ -1,0 +1,14 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="TP4 — Simple (ESM + CDN)">
+  <h2 style="margin:0 0 .75rem">Plot — ESM + CDN</h2>
+  <div id="myplot"></div>
+
+  <script type="module">
+    import * as Plot from "https://cdn.jsdelivr.net/npm/@observablehq/plot@0.6/+esm";
+
+    const plot = Plot.rectY({ length: 10000 }, Plot.binX({ y: "count" }, { x: Math.random }));
+    document.querySelector("#myplot").append(plot);
+  </script>
+</Layout>
