@@ -1,0 +1,33 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="TP4 – Simple (barres)">
+  <h2 style="margin:0 0 1rem">Exemple simple – barres</h2>
+  <div id="chart"></div>
+
+  <script>
+    // Client uniquement
+    import * as Plot from "@observablehq/plot";
+
+    // Données bidon
+    const letters = "ABCDEFGHIJ".split("").map((name, i) => ({
+      name,
+      value: 10 + Math.round(Math.random() * 40)
+    }));
+
+    const $chart = document.querySelector("#chart");
+    $chart.innerHTML = "";
+    const plot = Plot.plot({
+      width: 900,
+      height: 380,
+      y: { grid: true, label: "Valeur →" },
+      x: { label: "Catégorie →" },
+      marks: [
+        Plot.barY(letters, { x: "name", y: "value" }),
+        Plot.ruleY([0])
+      ]
+    });
+    $chart.append(plot);
+  </script>
+</Layout>

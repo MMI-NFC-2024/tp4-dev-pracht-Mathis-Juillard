@@ -1,0 +1,14 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="TP4 — Simple (ESM via npm)">
+  <h2 style="margin:0 0 .75rem">Plot — ESM via npm</h2>
+  <div id="myplot"></div>
+
+  <script>
+    import * as Plot from "@observablehq/plot";
+
+    const plot = Plot.rectY({ length: 10000 }, Plot.binX({ y: "count" }, { x: Math.random }));
+    document.querySelector("#myplot").append(plot);
+  </script>
+</Layout>
