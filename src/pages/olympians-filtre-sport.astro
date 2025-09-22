@@ -1,0 +1,70 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Olympians — Filtre sport">
+  <h2 style="margin:0 0 .75rem">Olympians — filtre sport</h2>
+
+  <label style="display:block;margin:.5rem 0 1rem">
+    Sport :
+    <select id="sport" style="margin-left:.5rem">
+      <option value="">Tous les sports</option>
+    </select>
+  </label>
+
+  <div id="vis"></div>
+
+  <script>
+    import * as Plot from "@observablehq/plot";
+    import olympiansRaw from "../assets/olympians.json";
+
+    const base = olympiansRaw
+      .filter(d => d.height != null && d.weight != null)
+      .map(d => ({
+        ...d,
+        height: +d.height,
+        weight: +d.weight,
+        sex: d.sex?.toLowerCase() || null,
+        sport: d.sport
+      }));
+
+    const root = document.querySelector("#vis");
+    const selectSport = document.querySelector("#sport");
+
+    // options dynamiques
+    [...new Set(base.map(d => d.sport))].sort()
+      .forEach(s => selectSport.append(new Option(s, s)));
+
+    const colors = {
+      domain: ["female", "male"],
+      range: ["#ff7f0e", "#1f77b4"]
+    };
+
+    function render() {
+      const sport = selectSport.value;
+      const rows = sport ? base.filter(d => d.sport === sport) : base;
+
+      root.innerHTML = "";
+      const plot = Plot.plot({
+        width: 920,
+        height: 520,
+        marks: [
+          Plot.dot(rows, {
+            x: "height",
+            y: "weight",
+            fill: "sex",
+            stroke: "sex",
+            r: 3.5,
+            tip: true
+          })
+        ],
+        x: { label: "Taille (m)", grid: true },
+        y: { label: "Poids (kg)", grid: true },
+        color: { legend: true, ...colors }
+      });
+      root.append(plot);
+    }
+
+    selectSport.addEventListener("change", render);
+    render();
+  </script>
+</Layout>

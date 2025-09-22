@@ -1,0 +1,116 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Olympians — filtres sport / pays / sexe / médailles">
+  <h2 style="margin:0 0 .75rem">Olympians — filtres sport / pays / sexe / médailles</h2>
+
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;margin:.5rem 0 1rem">
+    <label>Sport :
+      <select id="sport"><option value="">Tous</option></select>
+    </label>
+    <label>Pays :
+      <select id="nat"><option value="">Tous</option></select>
+    </label>
+    <label>Sexe :
+      <select id="sex">
+        <option value="">Tous</option>
+        <option value="female">Female</option>
+        <option value="male">Male</option>
+      </select>
+    </label>
+    <label>Médailles :
+      <select id="medal">
+        <option value="">Toutes</option>
+        <option value="yes">Avec médaille</option>
+        <option value="no">Sans médaille</option>
+      </select>
+    </label>
+  </div>
+
+  <div id="vis"></div>
+
+  <script>
+    import * as Plot from "@observablehq/plot";
+    import olympiansRaw from "../assets/olympians.json";
+
+    const base = olympiansRaw
+      .filter(d => d.height != null && d.weight != null)
+      .map(d => ({
+        ...d,
+        height: +d.height,
+        weight: +d.weight,
+        sex: d.sex?.toLowerCase() || null,
+        sport: d.sport,
+        nationality: d.nationality,
+        medals: (+d.gold || 0) + (+d.silver || 0) + (+d.bronze || 0),
+        name: d.name
+      }));
+
+    const root = document.querySelector("#vis");
+    const $ = (s) => document.querySelector(s);
+    const selectSport = $("#sport");
+    const selectNat = $("#nat");
+    const selectSex = $("#sex");
+    const selectMedal = $("#medal");
+
+    // options dynamiques
+    [...new Set(base.map(d => d.sport))].sort()
+      .forEach(s => selectSport.append(new Option(s, s)));
+    [...new Set(base.map(d => d.nationality))].sort()
+      .forEach(n => selectNat.append(new Option(n, n)));
+
+    const colors = {
+      domain: ["female", "male"],
+      range: ["#ff7f0e", "#1f77b4"]
+    };
+
+    function applyFilters() {
+      const sport = selectSport.value;
+      const nat = selectNat.value;
+      const sex = selectSex.value;
+      const medal = selectMedal.value;
+
+      return base.filter(d =>
+        (!sport || d.sport === sport) &&
+        (!nat || d.nationality === nat) &&
+        (!sex || d.sex === sex) &&
+        (!medal || (medal === "yes" ? d.medals > 0 : d.medals === 0))
+      );
+    }
+
+    function render() {
+      const rows = applyFilters();
+
+      root.innerHTML = "";
+      const plot = Plot.plot({
+        width: 920,
+        height: 520,
+        marks: [
+          Plot.dot(rows, {
+            x: "height",
+            y: "weight",
+            fill: "sex",
+            stroke: "sex",
+            r: 3.5,
+            tip: true,
+            channels: {
+              name: {value: d => d.name},
+              sport: {value: d => d.sport},
+              pays:  {value: d => d.nationality},
+              med:   {value: d => d.medals}
+            }
+          })
+        ],
+        x: { label: "Taille (m)", grid: true },
+        y: { label: "Poids (kg)", grid: true },
+        color: { legend: true, ...colors }
+      });
+      root.append(plot);
+    }
+
+    [selectSport, selectNat, selectSex, selectMedal].forEach(el =>
+      el.addEventListener("change", render)
+    );
+    render();
+  </script>
+</Layout>
