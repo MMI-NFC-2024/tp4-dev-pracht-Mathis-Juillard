@@ -1,17 +1,59 @@
 ---
 import Layout from "../layouts/Layout.astro";
 ---
-<Layout title="TP4 — Graphiques côté client">
-  <h1 style="margin:0 0 .5rem;font-weight:800;font-size:clamp(1.6rem,3vw,2.4rem)">
-    TP4 — Graphiques côté client (Observable Plot)
-  </h1>
-  <p style="opacity:.8;margin:.25rem 0 1.25rem">
-    Utilise les liens ci-dessous pour tester chaque variante :
+<Layout title="TP4 — Accueil">
+  <h1 class="text-3xl font-extrabold mb-2">TP4 — Graphiques côté client</h1>
+  <p class="text-slate-400 mb-8">
+    Sélectionne un jeu de données ci-dessous : <strong>Penguins</strong> ou <strong>Olympians</strong>.
   </p>
 
-  <ul style="line-height:1.9">
-    <li><a href="/simple-cdn" class="underline">Simple (ESM + CDN)</a></li>
-    <li><a href="/simple-esm" class="underline">Simple (ESM via npm)</a></li>
-  </ul>
-</Layout>
+  <!-- Penguins -->
+  <section class="mb-10">
+    <h2 class="text-xl font-semibold mb-3"> Penguins</h2>
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <li>
+        <a href="/penguin" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Scatter</div>
+          <p class="text-sm text-slate-400">Nuage de points (culmen length vs depth) pour toutes les espèces.</p>
+        </a>
+      </li>
+      <li>
+        <a href="/penguin-filter" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Filtre espèce</div>
+          <p class="text-sm text-slate-400">Sélecteur d’espèce avec couleurs figées (bleu/jaune/rouge).</p>
+        </a>
+      </li>
+      <li>
+        <a href="/penguin-multi" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Filtres multiples</div>
+          <p class="text-sm text-slate-400">Espèce + île + sexe, validation des combinaisons et message vide.</p>
+        </a>
+      </li>
+    </ul>
+  </section>
 
+  <!-- Olympians -->
+  <section>
+    <h2 class="text-xl font-semibold mb-3"> Olympians</h2>
+    <ul class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+      <li>
+        <a href="/olympians-scatter" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Scatter</div>
+          <p class="text-sm text-slate-400">Taille (m) vs poids (kg), couleurs stables par sexe.</p>
+        </a>
+      </li>
+      <li>
+        <a href="/olympians-filtre-sport" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Filtre sport</div>
+          <p class="text-sm text-slate-400">Sélection du sport, tooltip avec infos utiles.</p>
+        </a>
+      </li>
+      <li>
+        <a href="/olympians-filtres" class="block rounded-lg border border-slate-800 hover:border-slate-700 hover:bg-slate-900 p-4">
+          <div class="font-semibold">Filtres combinés</div>
+          <p class="text-sm text-slate-400">Sport + pays + sexe + médaille.</p>
+        </a>
+      </li>
+    </ul>
+  </section>
+</Layout>
