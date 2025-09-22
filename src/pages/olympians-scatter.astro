@@ -1,0 +1,53 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+<Layout title="Olympians — Scatterplot">
+  <h2 style="margin:0 0 .75rem">Olympians — Scatterplot</h2>
+  <div id="vis"></div>
+
+  <script>
+    import * as Plot from "@observablehq/plot";
+    import olympiansRaw from "../assets/olympians.json";
+
+    const base = olympiansRaw
+      .filter(d => d.height != null && d.weight != null)
+      .map(d => ({
+        ...d,
+        height: +d.height,   // m
+        weight: +d.weight,   // kg
+        sex: d.sex?.toLowerCase() || null,
+        medals: (+d.gold || 0) + (+d.silver || 0) + (+d.bronze || 0)
+      }));
+
+    const root = document.querySelector("#vis");
+
+    const colors = {
+      domain: ["female", "male"],
+      range: ["#ff7f0e", "#1f77b4"] // femelle = orange, mâle = bleu
+    };
+
+    function render() {
+      root.innerHTML = "";
+      const plot = Plot.plot({
+        width: 920,
+        height: 520,
+        marks: [
+          Plot.dot(base, {
+            x: "height",
+            y: "weight",
+            fill: "sex",
+            stroke: "sex",
+            r: 3.5,
+            tip: true
+          })
+        ],
+        x: { label: "Taille (m)", grid: true },
+        y: { label: "Poids (kg)", grid: true },
+        color: { legend: true, ...colors }
+      });
+      root.append(plot);
+    }
+
+    render();
+  </script>
+</Layout>
